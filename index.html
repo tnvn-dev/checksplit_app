@@ -704,6 +704,10 @@
     `;
     document.getElementById('bills').appendChild(div);
     attachExprInput(div.querySelector('.bill-payer-amt'), null);
+    div.addEventListener('change', function(e) {
+      if (!e.target.classList.contains('bill-payer')) return;
+      syncPayerAmt(div);
+    });
     renderParticipantChips(div);
     setBillMode(div, 'equal');
   }
@@ -713,19 +717,19 @@
     const container = billEl.querySelector('.participant-chips');
     if (!container) return;
     // Lưu lại ai đang được chọn
-    const selected = new Set(getBillParticipants(billEl));
-    // Nếu chưa có ai được chọn (lần đầu), chọn tất cả
-    const isFirstRender = container.children.length === 0;
+    // Track tên nào bị user chủ động bỏ tick — tên mới luôn được check mặc định
+    const prevUnchecked = new Set(
+      Array.from(container.querySelectorAll('input[type="checkbox"]:not(:checked)')).map(i => i.value)
+    );
     container.innerHTML = '';
     names.forEach(name => {
+      const checked = !prevUnchecked.has(name);
       const chip = document.createElement('label');
-      chip.className = 'p-chip' + (isFirstRender || selected.has(name) ? ' active' : '');
-      chip.innerHTML = `<input type="checkbox" value="${name}"${(isFirstRender || selected.has(name)) ? ' checked' : ''}>${name}`;
+      chip.className = 'p-chip' + (checked ? ' active' : '');
+      chip.innerHTML = `<input type="checkbox" value="${name}"${checked ? ' checked' : ''}>${name}`;
       chip.querySelector('input').addEventListener('change', function() {
         chip.classList.toggle('active', this.checked);
-        // Nếu mode=item thì re-render rows theo người đang tham gia
         if (billEl.dataset.mode === 'item') renderItemRows(billEl);
-        // Cập nhật payer dropdown
         refreshBillPayerDropdown(billEl);
       });
       container.appendChild(chip);
@@ -748,6 +752,9 @@
   function setBillMode(billEl, mode) {
     billEl.dataset.mode = mode;
     billEl.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    // Xóa ô số tiền payer khi đổi mode
+    const payerAmt = billEl.querySelector('.bill-payer-amt');
+    if (payerAmt) { payerAmt.value = ''; payerAmt.dataset.auto = ''; }
     const content = billEl.querySelector('.bill-content');
     if (mode === 'equal') {
       content.innerHTML = `
@@ -755,7 +762,10 @@
           placeholder="Tổng hóa đơn (VD: 150.000 + 80.000)" style="font-size:20px">
         <div class="total-preview bill-equal-preview"></div>
       `;
-      attachExprInput(content.querySelector('.bill-equal-total'), content.querySelector('.bill-equal-preview'));
+      const totalInput = content.querySelector('.bill-equal-total');
+      attachExprInput(totalInput, content.querySelector('.bill-equal-preview'));
+      totalInput.addEventListener('input', () => syncPayerAmt(billEl));
+      totalInput.addEventListener('blur', () => syncPayerAmt(billEl));
     } else {
       renderItemRows(billEl);
     }
@@ -801,6 +811,20 @@
       .reduce((s, i) => s + parseNum(i.value), 0);
     const el = billEl.querySelector('.bill-total-row .item-sum');
     if (el) el.textContent = fmt(sum);
+    syncPayerAmt(billEl);
+  }
+
+  function syncPayerAmt(billEl) {
+    const sel = billEl.querySelector('.bill-payer');
+    if (!sel || !sel.value) return;
+    const payerAmt = billEl.querySelector('.bill-payer-amt');
+    if (!payerAmt) return;
+    const bill = getBillData(billEl);
+    if (bill.total > 0) {
+      payerAmt.value = bill.total.toLocaleString('vi-VN');
+    } else {
+      payerAmt.value = '';
+    }
   }
 
   function refreshAllBillDropdowns() {
@@ -869,6 +893,8 @@
       grandTotal += bill.total;
       billSummary.push({ name: billName, total: bill.total, mode: bill.mode });
 
+      const hasPayer = bill.payer && balanceMap[bill.payer] !== undefined;
+
       if (bill.mode === 'equal') {
         const billPeople = (bill.participants && bill.participants.length > 0)
           ? bill.participants.filter(n => balanceMap[n] !== undefined)
@@ -876,19 +902,33 @@
         if (billPeople.length === 0) return;
         const share = bill.total / billPeople.length;
         billPeople.forEach(n => {
-          balanceMap[n] -= share;
-          breakdown[n].push({ label: billName + ' (chia đều)', amount: share, isCredit: false });
+          if (!hasPayer) {
+            // Không có payer: mỗi người tự trả, không ảnh hưởng balance nhưng vẫn show breakdown
+            breakdown[n].push({ label: billName + ' (chia đều — tự trả)', amount: share, isCredit: false });
+            breakdown[n].push({ label: '↳ Tự trả ' + billName, amount: share, isCredit: true });
+          } else {
+            balanceMap[n] -= share;
+            breakdown[n].push({ label: billName + ' (chia đều)', amount: share, isCredit: false });
+            if (n !== bill.payer) breakdown[n].push({ label: '↳ Trả cho ' + bill.payer, amount: null, isCredit: false, isNote: true });
+          }
         });
       } else {
         people.forEach(n => {
           const amt = bill.items[n] || 0;
-          balanceMap[n] -= amt;
-          if (amt > 0) breakdown[n].push({ label: billName, amount: amt, isCredit: false });
+          if (amt <= 0) return;
+          if (!hasPayer) {
+            breakdown[n].push({ label: billName + ' (tự trả)', amount: amt, isCredit: false });
+            breakdown[n].push({ label: '↳ Tự trả ' + billName, amount: amt, isCredit: true });
+          } else {
+            balanceMap[n] -= amt;
+            breakdown[n].push({ label: billName, amount: amt, isCredit: false });
+            if (n !== bill.payer) breakdown[n].push({ label: '↳ Trả cho ' + bill.payer, amount: null, isCredit: false, isNote: true });
+          }
         });
       }
 
       // Người trả được cộng lại
-      if (bill.payer && balanceMap[bill.payer] !== undefined) {
+      if (hasPayer) {
         const paid = bill.payerAmt > 0 ? bill.payerAmt : bill.total;
         balanceMap[bill.payer] += paid;
         breakdown[bill.payer].push({ label: '↳ Đã trả ' + billName, amount: paid, isCredit: true });
@@ -944,8 +984,9 @@
       const items = breakdown[p.name] || [];
       const breakdownHtml = items.length > 0 ? `
         <div class="breakdown-list">
-          ${items.map(b => `
-            <div class="breakdown-item ${b.isCredit ? 'b-credit' : 'b-debit'}">
+          ${items.map(b => b.isNote
+            ? `<div class="breakdown-item" style="color:var(--primary);font-size:12px;padding:1px 0 5px 2px;font-weight:600">${b.label}</div>`
+            : `<div class="breakdown-item ${b.isCredit ? 'b-credit' : 'b-debit'}">
               <span>${b.label}</span>
               <span class="b-amt">${b.isCredit ? '+' : '-'} ${fmt(b.amount)}</span>
             </div>`).join('')}
