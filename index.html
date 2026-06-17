@@ -714,7 +714,7 @@
       </div>
       <div class="mode-toggle">
         <button class="mode-btn active" data-mode="equal" onclick="setBillMode(this.closest('.bill-card'),'equal')">⚖️ Chia đều</button>
-        <button class="mode-btn" data-mode="item" onclick="setBillMode(this.closest('.bill-card'),'item')">🍽️ Chia theo món</button>
+        <button class="mode-btn" data-mode="item" onclick="setBillMode(this.closest('.bill-card'),'item')">🍽️ Ai gọi nấy trả</button>
       </div>
       <div class="bill-content"></div>
       <div class="bill-payer-row">
@@ -1003,7 +1003,7 @@
     // Danh sách hóa đơn
     html += '<div class="breakdown-list" style="margin-top:0;padding-top:0;margin-bottom:16px">';
     billSummary.forEach(b => {
-      const tag = b.mode === 'equal' ? 'chia đều' : 'chia theo món';
+      const tag = b.mode === 'equal' ? 'chia đều' : 'ai gọi nấy trả';
       html += `<div class="breakdown-item b-debit" style="font-size:14px;padding:5px 0">
         <span style="font-weight:600;color:var(--ink)">${b.name} <span style="font-weight:400;color:var(--muted);font-size:12px">(${tag})</span></span>
         <span class="b-amt" style="color:var(--ink)">${fmt(b.total)}</span>
