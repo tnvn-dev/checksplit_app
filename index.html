@@ -409,6 +409,35 @@
   .transfer:last-child { margin-bottom: 0; }
   .transfer .t-icon { font-size: 20px; }
   .transfer b { color: var(--primary-dark); font-weight: 700; }
+  .transfer-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .transfer-group .tg-head {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 15px;
+  }
+  .transfer-group .tg-total {
+    margin-left: auto;
+    font-weight: 800;
+    color: var(--primary-dark);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+  }
+  .transfer-group .tg-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-left: 31px;
+  }
+  .transfer-group .tg-line {
+    font-size: 14px;
+    color: var(--ink);
+  }
+  .transfer-group .tg-line b { color: var(--primary); }
   .muted { color: var(--muted); font-size: 14px; }
 
   footer {
@@ -1046,10 +1075,30 @@
     if (transfers.length === 0) {
       html += '<div class="muted">Khỏi chuyển luôn — cả hội huề hết, đỉnh! 🎉</div>';
     } else {
+      // Gom transfer theo người chuyển (from)
+      const grouped = {};
+      const order = [];
       transfers.forEach(t => {
-        html += `<div class="transfer"><span class="t-icon">👉</span>
-          <div><b>${t.from}</b> ting ting cho <b>${t.to}</b>: ${fmt(t.amount)}</div>
-        </div>`;
+        if (!grouped[t.from]) { grouped[t.from] = []; order.push(t.from); }
+        grouped[t.from].push(t);
+      });
+      order.forEach(from => {
+        const list = grouped[from];
+        if (list.length === 1) {
+          const t = list[0];
+          html += `<div class="transfer"><span class="t-icon">👉</span>
+            <div><b>${t.from}</b> ting ting cho <b>${t.to}</b>: ${fmt(t.amount)}</div>
+          </div>`;
+        } else {
+          const totalAmt = list.reduce((s, t) => s + t.amount, 0);
+          html += `<div class="transfer transfer-group">
+            <div class="tg-head"><span class="t-icon">👉</span> <b>${from}</b> cần ting ting <span class="tg-total">${fmt(totalAmt)}</span></div>
+            <div class="tg-lines">`;
+          list.forEach(t => {
+            html += `<div class="tg-line">↳ cho <b>${t.to}</b>: ${fmt(t.amount)}</div>`;
+          });
+          html += `</div></div>`;
+        }
       });
     }
     html += '</div>';
