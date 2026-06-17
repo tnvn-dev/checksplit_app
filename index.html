@@ -216,6 +216,70 @@
     text-align: right;
     color: var(--primary-dark);
   }
+  .total-preview {
+    text-align: right;
+    font-size: 13px;
+    margin-top: 6px;
+    min-height: 18px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .total-preview.ok { color: var(--green); }
+  .total-preview.err { color: var(--red); }
+
+  /* ===== Hóa đơn (bill card) ===== */
+  .bill-head { display: flex; gap: 8px; align-items: center; margin-bottom: 14px; }
+  .bill-name-input { flex: 1; font-weight: 600; }
+  .mode-toggle { display: flex; gap: 6px; margin-bottom: 14px; }
+  .mode-btn {
+    flex: 1; padding: 10px; border-radius: 11px;
+    border: 2px solid var(--line); background: #fdfcff;
+    color: var(--muted); font-weight: 600; font-size: 14px;
+    font-family: inherit; cursor: pointer; transition: all .15s;
+  }
+  .mode-btn.active {
+    border-color: var(--primary); background: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  .bill-item-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bill-item-row .item-name {
+    flex: 1.4; font-weight: 600; color: var(--primary-dark);
+    font-size: 14px; padding: 11px 13px; background: var(--primary-light);
+    border-radius: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bill-item-row input.item-amt {
+    flex: 1; text-align: right;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  }
+  .bill-total-row {
+    text-align: right; font-size: 13px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace; margin-top: 8px;
+  }
+  .bill-total-row .item-sum { color: var(--primary-dark); font-weight: 700; }
+  .participants-section { margin-bottom: 14px; }
+  .participants-label { font-size: 13px; font-weight: 700; color: var(--primary-dark); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .participant-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+  .p-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 999px; cursor: pointer;
+    font-size: 13px; font-weight: 600; border: 2px solid var(--line);
+    background: #fdfcff; color: var(--muted);
+    transition: all .15s; user-select: none;
+  }
+  .p-chip input { display: none; }
+  .p-chip.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+  .p-chip.active::before { content: '✓ '; }
+
+  .bill-payer-row {
+    display: flex; gap: 8px; align-items: center;
+    margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line);
+  }
+  .bill-payer-row .payer-label { font-size: 13px; font-weight: 700; color: var(--primary-dark); flex: 0 0 auto; }
+  .bill-payer-row select { flex: 1.1; min-width: 0; padding: 11px 8px; }
+  .bill-payer-row input {
+    flex: 1; min-width: 0; text-align: right;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  }
 
   .person-row, .prepay-row {
     display: flex;
@@ -224,10 +288,7 @@
     align-items: center;
   }
   .person-row input.name { flex: 1.6; }
-  .person-row input.paid {
-    flex: 1; text-align: right;
-    font-family: 'JetBrains Mono', monospace; font-weight: 600;
-  }
+  .bill-name-input { flex: 1; min-width: 0; font-weight: 600; }
   .prepay-row { flex-wrap: wrap; }
   .prepay-row select { flex: 1; min-width: 0; padding: 13px 8px; }
   .prepay-row .arrow { color: var(--accent); font-size: 20px; font-weight: 800; flex: 0 0 auto; }
@@ -362,6 +423,59 @@
     font-weight: 700;
   }
 
+  .step-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, rgba(124,58,237,0.07), rgba(244,63,94,0.05));
+    border: 1.5px solid rgba(124,58,237,0.18);
+    border-radius: 14px;
+    padding: 10px 16px;
+  }
+  .step-num {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Baloo 2', cursive;
+    display: grid; place-items: center;
+    flex: 0 0 auto;
+    box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+  }
+  .step-text {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    letter-spacing: .2px;
+  }
+
+  .breakdown-list {
+    margin-top: 9px;
+    padding-top: 9px;
+    border-top: 1px solid var(--line);
+  }
+  .breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .breakdown-item .b-amt {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 10px;
+  }
+  .breakdown-item.b-debit .b-amt { color: var(--ink); }
+  .breakdown-item.b-credit { color: var(--green); }
+  .breakdown-item.b-credit .b-amt { color: var(--green); }
+
   @media (max-width: 480px) {
     .hero { padding: 40px 16px 110px; }
     .card { padding: 16px; border-radius: 18px; }
@@ -390,22 +504,23 @@
 
   <main class="app">
     <div class="card">
-      <div class="card-title"><span class="icon ic-bill">🧾</span> Tổng hóa đơn</div>
-      <input type="text" id="total" class="total-input" inputmode="numeric" placeholder="0 đ">
-    </div>
-
-    <div class="card">
+      <div class="step-label"><span class="step-num">1</span><span class="step-text">Bước 1 — Hội bạn ăn chơi</span></div>
       <div class="card-title"><span class="icon ic-people">🥳</span> Hội bạn ăn chơi</div>
       <div id="people"></div>
       <button class="btn btn-add" onclick="addPerson()">＋ Thêm chiến hữu</button>
+    </div>
 
-      <hr class="divider">
+    <div class="step-label"><span class="step-num">2</span><span class="step-text">Bước 2 — Nhập hóa đơn</span></div>
+    <div id="bills"></div>
+    <button class="btn btn-add" style="margin-bottom:18px" onclick="addBill()">＋ Thêm hóa đơn</button>
 
-      <div class="sub-label">🔄 Đã ting ting trước rồi <span class="opt">(nếu có)</span></div>
+    <div class="card">
+      <div class="sub-label">🔄 Ai chuyển khoản riêng cho ai rồi? <span class="opt">(nếu có)</span></div>
       <div id="prepays"></div>
       <button class="btn btn-add" onclick="addPrepay()">＋ Thêm khoản đã trả</button>
     </div>
 
+    <div class="step-label" style="margin-bottom:12px"><span class="step-num">3</span><span class="step-text">Bước 3 — Chốt đơn</span></div>
     <button class="btn btn-primary" onclick="calculate()">Chốt đơn, chia liền! 🚀</button>
 
     <div id="output"></div>
@@ -418,86 +533,128 @@
   </main>
 
 <script>
-  // ---- Định dạng tiền VN ----
+  // ---- Tiện ích số ----
   function fmt(n) {
-    const r = Math.round(n);
-    return r.toLocaleString('vi-VN') + ' đ';
+    return Math.round(n).toLocaleString('vi-VN') + ' đ';
   }
   function parseNum(str) {
-    const digits = (str || '').replace(/[^\d]/g, '');
-    return digits === '' ? 0 : parseInt(digits, 10);
+    const d = (str || '').replace(/[^\d]/g, '');
+    return d === '' ? 0 : parseInt(d, 10);
   }
-  function attachFormat(input) {
+  function evalTotal(str) {
+    if (!str || !str.trim()) return { value: 0 };
+    const normalized = str
+      .replace(/[^\d\s\+\-\*\/\.\,]/g, '')
+      .replace(/\.(?=\d{3}(?:[^\d]|$))/g, '')
+      .replace(/,(?=\d{3}(?:[^\d]|$))/g, '')
+      .replace(/,/g, '.').trim();
+    try {
+      if (!/^[\d\s\.\+\-\*\/]+$/.test(normalized)) return { value: 0, invalid: true };
+      const val = Function('"use strict"; return (' + normalized + ')')();
+      if (!isFinite(val) || isNaN(val) || val < 0) return { value: 0, invalid: true };
+      return { value: Math.round(val), expr: /[\+\-\*\/]/.test(normalized) };
+    } catch { return { value: 0, invalid: true }; }
+  }
+
+  // Format số realtime giữ con trỏ đúng vị trí
+  function attachExprInput(input, preview) {
     input.addEventListener('input', function() {
-      const num = parseNum(this.value);
-      this.value = num === 0 ? '' : num.toLocaleString('vi-VN');
+      const raw = this.value, pos = this.selectionStart;
+      let semCount = 0;
+      for (let i = 0; i < pos; i++) if (/[\d\+\-\*\/]/.test(raw[i])) semCount++;
+      const clean = raw.replace(/(\d)\.(?=\d)/g, '$1');
+      const formatted = clean.replace(/\d+/g, m => Number(m).toLocaleString('vi-VN'));
+      let newPos = formatted.length, count = 0;
+      if (semCount === 0) { newPos = 0; } else {
+        for (let i = 0; i < formatted.length; i++) {
+          if (/[\d\+\-\*\/]/.test(formatted[i])) count++;
+          if (count === semCount) { newPos = i + 1; break; }
+        }
+      }
+      this.value = formatted;
+      this.setSelectionRange(newPos, newPos);
+      if (preview) {
+        const hasOp = /[\+\-\*\/]/.test(clean);
+        if (!hasOp) { preview.textContent = ''; preview.className = 'total-preview'; return; }
+        const { value, invalid } = evalTotal(formatted);
+        if (invalid) { preview.textContent = '✗ Không hợp lệ'; preview.className = 'total-preview err'; }
+        else if (value > 0) { preview.textContent = '= ' + fmt(value); preview.className = 'total-preview ok'; }
+        else { preview.textContent = ''; preview.className = 'total-preview'; }
+      }
     });
     input.addEventListener('blur', function() {
-      if (this.value.trim() === '') this.value = '0';
+      const raw = this.value.trim();
+      if (preview) { preview.textContent = ''; preview.className = 'total-preview'; }
+      if (raw === '' || raw === '0') { this.value = '0'; return; }
+      const { value, invalid } = evalTotal(raw);
+      if (!invalid && value > 0) this.value = value.toLocaleString('vi-VN');
     });
-    input.addEventListener('focus', function() {
-      if (this.value.trim() === '0') this.value = '';
-    });
+    input.addEventListener('focus', function() { if (this.value.trim() === '0') this.value = ''; });
+    input.addEventListener('keydown', function(e) { if (e.key === 'Enter') this.blur(); });
   }
 
-  // ---- Tiện ích cho dropdown người ----
+  function attachFormat(input) {
+    input.addEventListener('input', function() {
+      const raw = this.value, pos = this.selectionStart;
+      let digits = 0;
+      for (let i = 0; i < pos; i++) if (/\d/.test(raw[i])) digits++;
+      const num = parseNum(raw);
+      this.value = num === 0 ? '' : num.toLocaleString('vi-VN');
+      let newPos = 0, count = 0;
+      for (let i = 0; i < this.value.length; i++) {
+        if (/\d/.test(this.value[i])) count++;
+        if (count === digits) { newPos = i + 1; break; }
+        if (digits === 0) { newPos = 0; break; }
+      }
+      this.setSelectionRange(newPos, newPos);
+    });
+    input.addEventListener('blur', function() { if (!this.value.trim()) this.value = '0'; });
+    input.addEventListener('focus', function() { if (this.value.trim() === '0') this.value = ''; });
+  }
+
+  // ---- Người ----
   function getNames() {
     return Array.from(document.querySelectorAll('.person-row input.name'))
-      .map(i => i.value.trim()).filter(n => n !== '');
+      .map(i => i.value.trim()).filter(n => n);
   }
-  function buildOptions(names, selectedName = '') {
-    return names.map(n =>
-      `<option value="${n}" ${n === selectedName ? 'selected' : ''}>${n}</option>`
-    ).join('');
+  function buildOptions(names, sel = '') {
+    return names.map(n => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
   }
-  function refreshPrepayDropdowns() {
-    const names = getNames();
-    document.querySelectorAll('.prepay-row').forEach(row => {
-      const fromSel = row.querySelector('.prepay-from');
-      const toSel = row.querySelector('.prepay-to');
-      const fromVal = fromSel.value, toVal = toSel.value;
-      fromSel.innerHTML = buildOptions(names, fromVal);
-      toSel.innerHTML = buildOptionsExclude(names, fromSel.value, toVal !== fromSel.value ? toVal : '');
-    });
+  function buildOptionsExclude(names, excl, sel = '') {
+    return names.filter(n => n !== excl)
+      .map(n => `<option value="${n}"${n === sel ? ' selected' : ''}>${n}</option>`).join('');
   }
 
-  // ---- Quản lý danh sách người ----
-  function addPerson(name = '', paid = '0') {
+  function onNamesChange() {
+    refreshPrepayDropdowns();
+    document.querySelectorAll('.bill-card').forEach(billEl => renderParticipantChips(billEl));
+    refreshAllBillItemRows();
+  }
+
+  function addPerson(name = '') {
     const div = document.createElement('div');
     div.className = 'person-row';
     div.innerHTML = `
-      <input class="name" type="text" placeholder="Tên" value="${name}">
-      <input class="paid" type="text" inputmode="numeric" placeholder="0" value="${paid}">
-      <button class="btn btn-del" onclick="this.parentElement.remove(); refreshPrepayDropdowns()">✕</button>
+      <input class="name" type="text" placeholder="Tên bạn" value="${name}">
+      <button class="btn btn-del" onclick="this.parentElement.remove(); onNamesChange()">Xóa</button>
     `;
     document.getElementById('people').appendChild(div);
-    attachFormat(div.querySelector('.paid'));
-    div.querySelector('.name').addEventListener('input', refreshPrepayDropdowns);
+    div.querySelector('.name').addEventListener('input', onNamesChange);
   }
 
-  // ---- Quản lý khoản đã thanh toán trước ----
-  function buildOptionsExclude(names, excludeName, selectedName = '') {
-    return names
-      .filter(n => n !== excludeName)
-      .map(n => `<option value="${n}" ${n === selectedName ? 'selected' : ''}>${n}</option>`)
-      .join('');
+  // ---- Prepay ----
+  function refreshPrepayDropdowns() {
+    const names = getNames();
+    document.querySelectorAll('.prepay-row').forEach(row => {
+      const f = row.querySelector('.prepay-from'), t = row.querySelector('.prepay-to');
+      const fv = f.value, tv = t.value;
+      f.innerHTML = buildOptions(names, fv);
+      t.innerHTML = buildOptionsExclude(names, f.value, tv !== f.value ? tv : '');
+    });
   }
-
-  function syncPrepayRow(row, names) {
-    const fromSel = row.querySelector('.prepay-from');
-    const toSel = row.querySelector('.prepay-to');
-    const fromVal = fromSel.value;
-    const toVal = toSel.value;
-    // Rebuild "to" excluding currently selected "from"
-    toSel.innerHTML = buildOptionsExclude(names, fromVal, toVal !== fromVal ? toVal : '');
-  }
-
   function addPrepay() {
     const names = getNames();
-    if (names.length < 2) {
-      alert('Hãy nhập ít nhất 2 người (có tên) trước khi thêm khoản đã trả.');
-      return;
-    }
+    if (names.length < 2) { alert('Nhập ít nhất 2 người trước nhé!'); return; }
     const div = document.createElement('div');
     div.className = 'prepay-row';
     div.innerHTML = `
@@ -505,88 +662,312 @@
       <span class="arrow">→</span>
       <select class="prepay-to">${buildOptionsExclude(names, names[0], names[1])}</select>
       <input class="prepay-amt" type="text" inputmode="numeric" placeholder="Số tiền">
-      <button class="btn btn-del" onclick="this.parentElement.remove()">✕</button>
+      <button class="btn btn-del" onclick="this.parentElement.remove()">Xóa</button>
     `;
     document.getElementById('prepays').appendChild(div);
     attachFormat(div.querySelector('.prepay-amt'));
-
-    // Khi đổi "từ", rebuild lại "đến" để loại trừ người đó
     div.querySelector('.prepay-from').addEventListener('change', function() {
-      syncPrepayRow(div, getNames());
+      const t = div.querySelector('.prepay-to'), tv = t.value;
+      t.innerHTML = buildOptionsExclude(getNames(), this.value, tv !== this.value ? tv : '');
+    });
+  }
+
+  // ---- Bill cards ----
+  let billCount = 0;
+
+  function addBill() {
+    billCount++;
+    const div = document.createElement('div');
+    div.className = 'card bill-card';
+    const names = getNames();
+    const payerOpts = names.length ? buildOptions(['', ...names], '') : '<option value="">— chưa có người —</option>';
+    div.innerHTML = `
+      <div class="bill-head">
+        <span class="icon ic-bill" style="width:36px;height:36px;font-size:18px;border-radius:11px;display:grid;place-items:center;box-shadow:0 4px 10px rgba(0,0,0,.12)">🧾</span>
+        <input class="bill-name-input" type="text" placeholder="Tên hóa đơn (VD: Đồ uống, Lẩu...)" style="flex:1;min-width:0">
+        <button class="btn btn-del" style="flex:0 0 auto" onclick="this.closest('.bill-card').remove()">Xóa</button>
+      </div>
+      <div class="participants-section">
+        <div class="participants-label">👥 Ai tham gia?</div>
+        <div class="participant-chips"></div>
+      </div>
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="equal" onclick="setBillMode(this.closest('.bill-card'),'equal')">⚖️ Chia đều</button>
+        <button class="mode-btn" data-mode="item" onclick="setBillMode(this.closest('.bill-card'),'item')">🍽️ Chia theo món</button>
+      </div>
+      <div class="bill-content"></div>
+      <div class="bill-payer-row">
+        <span class="payer-label">💳 Ai đã trả?</span>
+        <select class="bill-payer">${payerOpts}</select>
+        <input class="bill-payer-amt" type="text" inputmode="decimal" placeholder="Số tiền đã trả">
+      </div>
+    `;
+    document.getElementById('bills').appendChild(div);
+    attachExprInput(div.querySelector('.bill-payer-amt'), null);
+    renderParticipantChips(div);
+    setBillMode(div, 'equal');
+  }
+
+  function renderParticipantChips(billEl) {
+    const names = getNames();
+    const container = billEl.querySelector('.participant-chips');
+    if (!container) return;
+    // Lưu lại ai đang được chọn
+    const selected = new Set(getBillParticipants(billEl));
+    // Nếu chưa có ai được chọn (lần đầu), chọn tất cả
+    const isFirstRender = container.children.length === 0;
+    container.innerHTML = '';
+    names.forEach(name => {
+      const chip = document.createElement('label');
+      chip.className = 'p-chip' + (isFirstRender || selected.has(name) ? ' active' : '');
+      chip.innerHTML = `<input type="checkbox" value="${name}"${(isFirstRender || selected.has(name)) ? ' checked' : ''}>${name}`;
+      chip.querySelector('input').addEventListener('change', function() {
+        chip.classList.toggle('active', this.checked);
+        // Nếu mode=item thì re-render rows theo người đang tham gia
+        if (billEl.dataset.mode === 'item') renderItemRows(billEl);
+        // Cập nhật payer dropdown
+        refreshBillPayerDropdown(billEl);
+      });
+      container.appendChild(chip);
+    });
+    refreshBillPayerDropdown(billEl);
+  }
+
+  function getBillParticipants(billEl) {
+    return Array.from(billEl.querySelectorAll('.participant-chips input:checked')).map(i => i.value);
+  }
+
+  function refreshBillPayerDropdown(billEl) {
+    const participants = getBillParticipants(billEl);
+    const sel = billEl.querySelector('.bill-payer');
+    if (!sel) return;
+    const cur = sel.value;
+    sel.innerHTML = buildOptions(['', ...participants], cur);
+  }
+
+  function setBillMode(billEl, mode) {
+    billEl.dataset.mode = mode;
+    billEl.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+    const content = billEl.querySelector('.bill-content');
+    if (mode === 'equal') {
+      content.innerHTML = `
+        <input class="total-input bill-equal-total" type="text" inputmode="decimal"
+          placeholder="Tổng hóa đơn (VD: 150.000 + 80.000)" style="font-size:20px">
+        <div class="total-preview bill-equal-preview"></div>
+      `;
+      attachExprInput(content.querySelector('.bill-equal-total'), content.querySelector('.bill-equal-preview'));
+    } else {
+      renderItemRows(billEl);
+    }
+  }
+
+  function renderItemRows(billEl) {
+    const names = getBillParticipants(billEl);
+    const content = billEl.querySelector('.bill-content');
+    // Lưu values cũ
+    const oldVals = {};
+    content.querySelectorAll('.bill-item-row').forEach(r => {
+      oldVals[r.dataset.person] = r.querySelector('input').value;
+    });
+    content.innerHTML = '';
+    if (names.length === 0) {
+      content.innerHTML = '<div class="muted" style="padding:8px 0">Thêm người vào danh sách trước nhé!</div>';
+      return;
+    }
+    names.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'bill-item-row';
+      row.dataset.person = name;
+      row.innerHTML = `
+        <span class="item-name">${name}</span>
+        <input class="item-amt" type="text" inputmode="decimal" placeholder="0 đ">
+      `;
+      content.appendChild(row);
+      const inp = row.querySelector('.item-amt');
+      if (oldVals[name]) inp.value = oldVals[name];
+      attachFormat(inp);
+      inp.addEventListener('input', () => updateItemTotal(billEl));
+    });
+    // Tổng
+    const totalRow = document.createElement('div');
+    totalRow.className = 'bill-total-row';
+    totalRow.innerHTML = 'Tổng: <span class="item-sum">0 đ</span>';
+    content.appendChild(totalRow);
+    updateItemTotal(billEl);
+  }
+
+  function updateItemTotal(billEl) {
+    const sum = Array.from(billEl.querySelectorAll('.bill-item-row input.item-amt'))
+      .reduce((s, i) => s + parseNum(i.value), 0);
+    const el = billEl.querySelector('.bill-total-row .item-sum');
+    if (el) el.textContent = fmt(sum);
+  }
+
+  function refreshAllBillDropdowns() {
+    const names = getNames();
+    document.querySelectorAll('.bill-card').forEach(billEl => {
+      const sel = billEl.querySelector('.bill-payer');
+      if (!sel) return;
+      const cur = sel.value;
+      sel.innerHTML = buildOptions(['', ...names], cur);
+    });
+  }
+
+  function refreshAllBillItemRows() {
+    document.querySelectorAll('.bill-card').forEach(billEl => {
+      if (billEl.dataset.mode === 'item') renderItemRows(billEl);
     });
   }
 
   // ---- Tính toán ----
-  function calculate() {
-    const total = parseNum(document.getElementById('total').value);
-    const people = [];
-    document.querySelectorAll('.person-row').forEach(row => {
-      const name = row.querySelector('.name').value.trim();
-      const paid = parseNum(row.querySelector('.paid').value);
-      if (name !== '') people.push({ name, paid });
-    });
+  function getBillData(billEl) {
+    const mode = billEl.dataset.mode || 'equal';
+    const participants = getBillParticipants(billEl);
+    let total = 0;
+    const items = {};
+    if (mode === 'equal') {
+      total = evalTotal(billEl.querySelector('.bill-equal-total').value).value;
+    } else {
+      billEl.querySelectorAll('.bill-item-row').forEach(r => {
+        const amt = parseNum(r.querySelector('input').value);
+        items[r.dataset.person] = amt;
+        total += amt;
+      });
+    }
+    const payer = billEl.querySelector('.bill-payer').value;
+    const payerAmt = evalTotal(billEl.querySelector('.bill-payer-amt').value).value;
+    return { mode, total, items, payer, payerAmt, participants };
+  }
 
+  function calculate() {
     const out = document.getElementById('output');
+    const people = getNames();
     if (people.length === 0) {
       out.innerHTML = '<div class="card warn">Ơ kìa, nhập ít nhất 1 người (có tên) đã nào! 😅</div>';
       return;
     }
-    if (total <= 0) {
-      out.innerHTML = '<div class="card warn">Hóa đơn bao nhiêu vậy bạn ơi? Nhập số lớn hơn 0 nhé! 🧾</div>';
+    const billEls = document.querySelectorAll('.bill-card');
+    if (billEls.length === 0) {
+      out.innerHTML = '<div class="card warn">Chưa có hóa đơn nào — thêm hóa đơn trước nhé! 🧾</div>';
       return;
     }
 
-    const share = total / people.length;
-    const totalPaid = people.reduce((s, p) => s + p.paid, 0);
-
+    // balance = tiền đã trả thực tế - tiền phải trả; dương = người khác nợ mình, âm = mình nợ
     const balanceMap = {};
-    people.forEach(p => { balanceMap[p.name] = p.paid - share; });
+    people.forEach(n => { balanceMap[n] = 0; });
+    let grandTotal = 0;
 
+    // breakdown[name] = [{label, amount, isCredit}]
+    const breakdown = {};
+    people.forEach(n => { breakdown[n] = []; });
+    const billSummary = [];
+
+    billEls.forEach(billEl => {
+      const bill = getBillData(billEl);
+      if (bill.total <= 0) return;
+      const billName = billEl.querySelector('.bill-name-input').value.trim() || 'Hóa đơn';
+      grandTotal += bill.total;
+      billSummary.push({ name: billName, total: bill.total, mode: bill.mode });
+
+      if (bill.mode === 'equal') {
+        const billPeople = (bill.participants && bill.participants.length > 0)
+          ? bill.participants.filter(n => balanceMap[n] !== undefined)
+          : people;
+        if (billPeople.length === 0) return;
+        const share = bill.total / billPeople.length;
+        billPeople.forEach(n => {
+          balanceMap[n] -= share;
+          breakdown[n].push({ label: billName + ' (chia đều)', amount: share, isCredit: false });
+        });
+      } else {
+        people.forEach(n => {
+          const amt = bill.items[n] || 0;
+          balanceMap[n] -= amt;
+          if (amt > 0) breakdown[n].push({ label: billName, amount: amt, isCredit: false });
+        });
+      }
+
+      // Người trả được cộng lại
+      if (bill.payer && balanceMap[bill.payer] !== undefined) {
+        const paid = bill.payerAmt > 0 ? bill.payerAmt : bill.total;
+        balanceMap[bill.payer] += paid;
+        breakdown[bill.payer].push({ label: '↳ Đã trả ' + billName, amount: paid, isCredit: true });
+      }
+    });
+
+    // Prepay độc lập
     document.querySelectorAll('.prepay-row').forEach(row => {
       const from = row.querySelector('.prepay-from').value;
       const to = row.querySelector('.prepay-to').value;
       const amt = parseNum(row.querySelector('.prepay-amt').value);
       if (amt > 0 && from && to && from !== to) {
-        if (balanceMap[from] !== undefined) balanceMap[from] += amt;
-        if (balanceMap[to] !== undefined) balanceMap[to] -= amt;
+        if (balanceMap[from] !== undefined) {
+          balanceMap[from] += amt;
+          breakdown[from].push({ label: `↳ Đã chuyển cho ${to}`, amount: amt, isCredit: true });
+        }
+        if (balanceMap[to] !== undefined) {
+          balanceMap[to] -= amt;
+          breakdown[to].push({ label: `Nhận từ ${from}`, amount: amt, isCredit: false });
+        }
       }
     });
-    people.forEach(p => { p.balance = balanceMap[p.name]; });
 
-    let html = '';
-    html += `<div class="card" style="padding:14px">
-      <div class="share-banner">
-        <div class="label">Mỗi đứa gánh</div>
-        <div class="amount">${fmt(share)}</div>
-      </div>
-    </div>`;
+    const peopleData = people.map(n => ({ name: n, balance: balanceMap[n] }));
+
+    let html = `<div class="card" style="padding:14px"><div class="share-banner">
+      <div class="label">Tổng tất cả hóa đơn</div>
+      <div class="amount">${fmt(grandTotal)}</div>
+    </div></div>`;
 
     html += '<div class="card"><div class="card-title"><span class="icon ic-result">📊</span> Sổ nợ từng đứa</div>';
-    if (totalPaid !== total) {
-      const diff = total - totalPaid;
-      html += `<div class="warn">⚠️ Tổng tiền đã trả cho quán (${fmt(totalPaid)}) khác tổng hóa đơn (${fmt(total)}). `
-        + `Lệch ${fmt(Math.abs(diff))}. Kết quả vẫn tính theo tổng hóa đơn nha.</div>`;
-    }
-    people.forEach(p => {
+
+    // Danh sách hóa đơn
+    html += '<div class="breakdown-list" style="margin-top:0;padding-top:0;margin-bottom:16px">';
+    billSummary.forEach(b => {
+      const tag = b.mode === 'equal' ? 'chia đều' : 'chia theo món';
+      html += `<div class="breakdown-item b-debit" style="font-size:14px;padding:5px 0">
+        <span style="font-weight:600;color:var(--ink)">${b.name} <span style="font-weight:400;color:var(--muted);font-size:12px">(${tag})</span></span>
+        <span class="b-amt" style="color:var(--ink)">${fmt(b.total)}</span>
+      </div>`;
+    });
+    html += `<div class="breakdown-item" style="font-size:14px;padding:6px 0;border-top:2px solid var(--line);margin-top:4px">
+      <span style="font-weight:700;color:var(--primary-dark)">Tổng cộng</span>
+      <span class="b-amt" style="color:var(--primary-dark);font-size:15px">${fmt(grandTotal)}</span>
+    </div>`;
+    html += '</div><hr class="divider" style="margin:0 0 16px">';
+    peopleData.forEach(p => {
       let cls, text;
-      if (Math.round(p.balance) > 0) { cls = 'positive'; text = '+ ' + fmt(p.balance); }
-      else if (Math.round(p.balance) < 0) { cls = 'negative'; text = '− ' + fmt(-p.balance); }
+      if (Math.round(p.balance) > 0) { cls = 'positive'; text = 'được nhận ' + fmt(p.balance); }
+      else if (Math.round(p.balance) < 0) { cls = 'negative'; text = 'cần trả ' + fmt(-p.balance); }
       else { cls = 'zero'; text = 'huề'; }
-      html += `<div class="result-row">
-        <div><div class="who">${p.name}</div><div class="sub">đã trả ${fmt(p.paid)}</div></div>
-        <div class="pill ${cls}">${text}</div>
+
+      const items = breakdown[p.name] || [];
+      const breakdownHtml = items.length > 0 ? `
+        <div class="breakdown-list">
+          ${items.map(b => `
+            <div class="breakdown-item ${b.isCredit ? 'b-credit' : 'b-debit'}">
+              <span>${b.label}</span>
+              <span class="b-amt">${b.isCredit ? '+' : '-'} ${fmt(b.amount)}</span>
+            </div>`).join('')}
+        </div>` : '';
+
+      html += `<div class="result-row" style="flex-direction:column;align-items:stretch;gap:0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="who">${p.name}</div>
+          <div class="pill ${cls}">${text}</div>
+        </div>
+        ${breakdownHtml}
       </div>`;
     });
     html += '</div>';
 
-    const transfers = settle(people);
+    const transfers = settle(peopleData);
     html += '<div class="card"><div class="card-title"><span class="icon ic-money">💸</span> Ai ting ting cho ai</div>';
     if (transfers.length === 0) {
       html += '<div class="muted">Khỏi chuyển luôn — cả hội huề hết, đỉnh! 🎉</div>';
     } else {
       transfers.forEach(t => {
-        html += `<div class="transfer">
-          <span class="t-icon">👉</span>
+        html += `<div class="transfer"><span class="t-icon">👉</span>
           <div><b>${t.from}</b> ting ting cho <b>${t.to}</b>: ${fmt(t.amount)}</div>
         </div>`;
       });
@@ -597,22 +978,15 @@
     out.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // Thuật toán cân bằng: ghép người nợ với người dư
   function settle(people) {
-    const debtors = people.filter(p => Math.round(p.balance) < 0)
-      .map(p => ({ name: p.name, amt: -p.balance }));
-    const creditors = people.filter(p => Math.round(p.balance) > 0)
-      .map(p => ({ name: p.name, amt: p.balance }));
-
+    const debtors = people.filter(p => Math.round(p.balance) < 0).map(p => ({ name: p.name, amt: -p.balance }));
+    const creditors = people.filter(p => Math.round(p.balance) > 0).map(p => ({ name: p.name, amt: p.balance }));
     const transfers = [];
     let i = 0, j = 0;
     while (i < debtors.length && j < creditors.length) {
       const pay = Math.min(debtors[i].amt, creditors[j].amt);
-      if (Math.round(pay) > 0) {
-        transfers.push({ from: debtors[i].name, to: creditors[j].name, amount: pay });
-      }
-      debtors[i].amt -= pay;
-      creditors[j].amt -= pay;
+      if (Math.round(pay) > 0) transfers.push({ from: debtors[i].name, to: creditors[j].name, amount: pay });
+      debtors[i].amt -= pay; creditors[j].amt -= pay;
       if (Math.round(debtors[i].amt) <= 0) i++;
       if (Math.round(creditors[j].amt) <= 0) j++;
     }
@@ -620,10 +994,10 @@
   }
 
   // ---- Khởi tạo ----
-  attachFormat(document.getElementById('total'));
-  addPerson();
-  addPerson();
-  addPerson();
+  addPerson('');
+  addPerson('');
+  addPerson('');
+  addBill();
 </script>
 </body>
 </html>
