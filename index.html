@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CheckSplit App</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💸</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --primary: #7c3aed;
+    --primary-dark: #6d28d9;
+    --primary-light: #f3e8ff;
+    --accent: #f43f5e;
+    --orange: #fb923c;
+    --yellow: #fbbf24;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #e11d48;
+    --red-bg: #ffe4e6;
+    --ink: #2d1b54;
+    --muted: #897fa8;
+    --line: #ece8f5;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Be Vietnam Pro', -apple-system, sans-serif;
+    color: var(--ink);
+    background: #faf7ff;
+    overflow-x: hidden;
+  }
+
+  /* ===== Hero / Landing ===== */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 54px 20px 120px;
+    background: linear-gradient(135deg, #7c3aed 0%, #c026d3 45%, #f43f5e 100%);
+    background-size: 200% 200%;
+    animation: flow 9s ease infinite;
+    overflow: hidden;
+  }
+  @keyframes flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  /* họa tiết món ăn bay lơ lửng */
+  .hero .doodle {
+    position: absolute;
+    font-size: 38px;
+    opacity: .35;
+    animation: float 6s ease-in-out infinite;
+    user-select: none;
+    pointer-events: none;
+  }
+  .hero .d1 { top: 30px; left: 8%; animation-delay: 0s; }
+  .hero .d2 { top: 60px; right: 10%; font-size: 46px; animation-delay: .8s; }
+  .hero .d3 { top: 140px; left: 14%; font-size: 30px; animation-delay: 1.6s; }
+  .hero .d4 { top: 120px; right: 16%; font-size: 34px; animation-delay: 2.2s; }
+  .hero .d5 { bottom: 130px; left: 6%; font-size: 42px; animation-delay: 1.1s; }
+  .hero .d6 { bottom: 150px; right: 7%; font-size: 30px; animation-delay: 2.6s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(-6deg); }
+    50% { transform: translateY(-16px) rotate(6deg); }
+  }
+  .hero .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.22);
+    backdrop-filter: blur(6px);
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .hero h1 {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: clamp(34px, 9vw, 58px);
+    line-height: 1.05;
+    color: #fff;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.18);
+    letter-spacing: -0.5px;
+  }
+  .hero h1 .pop {
+    display: inline-block;
+    background: linear-gradient(180deg, #fde047, #fb923c);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transform: rotate(-2deg);
+  }
+  .hero .tag {
+    margin-top: 14px;
+    color: rgba(255,255,255,0.95);
+    font-size: clamp(14px, 4vw, 17px);
+    font-weight: 500;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero .mono {
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 18px;
+    display: inline-block;
+    background: rgba(0,0,0,0.22);
+    color: #fde047;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  /* sóng ngăn cách hero */
+  .wave {
+    position: absolute;
+    bottom: -1px; left: 0; width: 100%;
+    line-height: 0;
+  }
+
+  /* ===== Nội dung app ===== */
+  .app {
+    max-width: 620px;
+    margin: -80px auto 0;
+    padding: 0 16px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 22px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 12px 40px rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.06);
+  }
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  .card-title .icon {
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: 13px;
+    font-size: 20px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  }
+  .ic-bill { background: linear-gradient(135deg,#fb923c,#f43f5e); }
+  .ic-people { background: linear-gradient(135deg,#8b5cf6,#6366f1); }
+  .ic-result { background: linear-gradient(135deg,#06b6d4,#3b82f6); }
+  .ic-money { background: linear-gradient(135deg,#22c55e,#10b981); }
+
+  .divider {
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--line) 0 8px, transparent 8px 14px);
+    margin: 18px 0;
+    border: none;
+  }
+  .sub-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .sub-label span.opt { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+  input, select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 2px solid var(--line);
+    border-radius: 13px;
+    font-size: 15px;
+    font-family: inherit;
+    background: #fdfcff;
+    transition: border-color .15s, box-shadow .15s, background .15s;
+    color: var(--ink);
+  }
+  input::placeholder { color: #b9b1cf; }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(124,58,237,0.13);
+  }
+  .total-input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: right;
+    color: var(--primary-dark);
+  }
+
+  .person-row, .prepay-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 11px;
+    align-items: center;
+  }
+  .person-row input.name { flex: 1.6; }
+  .person-row input.paid {
+    flex: 1; text-align: right;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  }
+  .prepay-row { flex-wrap: wrap; }
+  .prepay-row select { flex: 1; min-width: 0; padding: 13px 8px; }
+  .prepay-row .arrow { color: var(--accent); font-size: 20px; font-weight: 800; flex: 0 0 auto; }
+  .prepay-row input.prepay-amt {
+    flex: 1.1; text-align: right; min-width: 0;
+    font-family: 'JetBrains Mono', monospace; font-weight: 600;
+  }
+
+  .btn {
+    border: none;
+    border-radius: 13px;
+    padding: 12px 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .08s, filter .15s;
+  }
+  .btn:active { transform: scale(0.96); }
+  .btn-add {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    width: 100%;
+    border: 2px dashed #d8b4fe;
+  }
+  .btn-add:hover { filter: brightness(0.98); }
+  .btn-del {
+    background: var(--red-bg);
+    color: var(--red);
+    padding: 11px 13px;
+    flex: 0 0 auto;
+    border-radius: 11px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #7c3aed 0%, #f43f5e 100%);
+    color: #fff;
+    width: 100%;
+    padding: 17px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    box-shadow: 0 10px 26px rgba(244,63,94,0.36);
+    letter-spacing: .3px;
+  }
+  .btn-primary:hover { filter: brightness(1.06); }
+
+  .share-banner {
+    background: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .share-banner::after {
+    content: "🍕🍜🍔🍣";
+    position: absolute;
+    bottom: -6px; right: 8px;
+    font-size: 30px; opacity: .25; letter-spacing: 4px;
+  }
+  .share-banner .label { font-size: 13px; opacity: .92; font-weight: 500; }
+  .share-banner .amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 30px; font-weight: 700; margin-top: 4px;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .result-row:last-child { border-bottom: none; }
+  .result-row .who { font-weight: 600; font-size: 15px; }
+  .result-row .sub { font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .pill {
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: nowrap;
+  }
+  .pill.positive { color: var(--green); background: var(--green-bg); }
+  .pill.negative { color: var(--red); background: var(--red-bg); }
+  .pill.zero { color: var(--muted); background: #f1eefa; }
+
+  .warn {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #b45309;
+    padding: 13px;
+    border-radius: 13px;
+    font-size: 13.5px;
+    margin-bottom: 15px;
+    line-height: 1.55;
+  }
+  .transfer {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    background: linear-gradient(100deg, #f3e8ff, #fae8ff);
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 9px;
+    font-size: 15px;
+  }
+  .transfer:last-child { margin-bottom: 0; }
+  .transfer .t-icon { font-size: 20px; }
+  .transfer b { color: var(--primary-dark); font-weight: 700; }
+  .muted { color: var(--muted); font-size: 14px; }
+
+  footer {
+    text-align: center;
+    padding: 10px 20px 40px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  footer .mono { font-family: 'JetBrains Mono', monospace; color: var(--primary); }
+
+  @media (max-width: 480px) {
+    .hero { padding: 40px 16px 110px; }
+    .card { padding: 16px; border-radius: 18px; }
+    .prepay-row select { font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+  <section class="hero">
+    <span class="doodle d1">🍕</span>
+    <span class="doodle d2">🍜</span>
+    <span class="doodle d3">🧋</span>
+    <span class="doodle d4">🍔</span>
+    <span class="doodle d5">🍣</span>
+    <span class="doodle d6">🌮</span>
+
+    <div class="badge">✨ Hết cảnh "ê mày nợ tao" ✨</div>
+    <h1>Chia Tiền<br><span class="pop">Không Drama</span> 🤑</h1>
+    <p class="tag">Ăn xong chia tiền cái rẹt, ai trả ai nhận rõ ràng — tình bạn bền vững, ví tiền minh bạch!</p>
+    <div class="mono">// no_more_awkward_moments();</div>
+
+    <svg class="wave" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,30 C960,60 1200,10 1440,40 L1440,80 L0,80 Z" fill="#faf7ff"/>
+    </svg>
+  </section>
+
+  <main class="app">
+    <div class="card">
+      <div class="card-title"><span class="icon ic-bill">🧾</span> Tổng hóa đơn</div>
+      <input type="text" id="total" class="total-input" inputmode="numeric" placeholder="0 đ">
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon ic-people">🥳</span> Hội bạn ăn chơi</div>
+      <div id="people"></div>
+      <button class="btn btn-add" onclick="addPerson()">＋ Thêm chiến hữu</button>
+
+      <hr class="divider">
+
+      <div class="sub-label">🔄 Đã ting ting trước rồi <span class="opt">(nếu có)</span></div>
+      <div id="prepays"></div>
+      <button class="btn btn-add" onclick="addPrepay()">＋ Thêm khoản đã trả</button>
+    </div>
+
+    <button class="btn btn-primary" onclick="calculate()">Chốt đơn, chia liền! 🚀</button>
+
+    <div id="output"></div>
+
+    <footer>
+      Made with 💜 &amp; <span class="mono">caffeine</span> · chia đều tới từng đồng
+    </footer>
+  </main>
+
+<script>
+  // ---- Định dạng tiền VN ----
+  function fmt(n) {
+    const r = Math.round(n);
+    return r.toLocaleString('vi-VN') + ' đ';
+  }
+  function parseNum(str) {
+    const digits = (str || '').replace(/[^\d]/g, '');
+    return digits === '' ? 0 : parseInt(digits, 10);
+  }
+  function attachFormat(input) {
+    input.addEventListener('input', function() {
+      const num = parseNum(this.value);
+      this.value = num === 0 ? '' : num.toLocaleString('vi-VN');
+    });
+    input.addEventListener('blur', function() {
+      if (this.value.trim() === '') this.value = '0';
+    });
+    input.addEventListener('focus', function() {
+      if (this.value.trim() === '0') this.value = '';
+    });
+  }
+
+  // ---- Tiện ích cho dropdown người ----
+  function getNames() {
+    return Array.from(document.querySelectorAll('.person-row input.name'))
+      .map(i => i.value.trim()).filter(n => n !== '');
+  }
+  function buildOptions(names, selectedName = '') {
+    return names.map(n =>
+      `<option value="${n}" ${n === selectedName ? 'selected' : ''}>${n}</option>`
+    ).join('');
+  }
+  function refreshPrepayDropdowns() {
+    const names = getNames();
+    document.querySelectorAll('.prepay-row').forEach(row => {
+      const fromSel = row.querySelector('.prepay-from');
+      const toSel = row.querySelector('.prepay-to');
+      const fromVal = fromSel.value, toVal = toSel.value;
+      fromSel.innerHTML = buildOptions(names, fromVal);
+      toSel.innerHTML = buildOptionsExclude(names, fromSel.value, toVal !== fromSel.value ? toVal : '');
+    });
+  }
+
+  // ---- Quản lý danh sách người ----
+  function addPerson(name = '', paid = '0') {
+    const div = document.createElement('div');
+    div.className = 'person-row';
+    div.innerHTML = `
+      <input class="name" type="text" placeholder="Tên" value="${name}">
+      <input class="paid" type="text" inputmode="numeric" placeholder="0" value="${paid}">
+      <button class="btn btn-del" onclick="this.parentElement.remove(); refreshPrepayDropdowns()">✕</button>
+    `;
+    document.getElementById('people').appendChild(div);
+    attachFormat(div.querySelector('.paid'));
+    div.querySelector('.name').addEventListener('input', refreshPrepayDropdowns);
+  }
+
+  // ---- Quản lý khoản đã thanh toán trước ----
+  function buildOptionsExclude(names, excludeName, selectedName = '') {
+    return names
+      .filter(n => n !== excludeName)
+      .map(n => `<option value="${n}" ${n === selectedName ? 'selected' : ''}>${n}</option>`)
+      .join('');
+  }
+
+  function syncPrepayRow(row, names) {
+    const fromSel = row.querySelector('.prepay-from');
+    const toSel = row.querySelector('.prepay-to');
+    const fromVal = fromSel.value;
+    const toVal = toSel.value;
+    // Rebuild "to" excluding currently selected "from"
+    toSel.innerHTML = buildOptionsExclude(names, fromVal, toVal !== fromVal ? toVal : '');
+  }
+
+  function addPrepay() {
+    const names = getNames();
+    if (names.length < 2) {
+      alert('Hãy nhập ít nhất 2 người (có tên) trước khi thêm khoản đã trả.');
+      return;
+    }
+    const div = document.createElement('div');
+    div.className = 'prepay-row';
+    div.innerHTML = `
+      <select class="prepay-from">${buildOptions(names)}</select>
+      <span class="arrow">→</span>
+      <select class="prepay-to">${buildOptionsExclude(names, names[0], names[1])}</select>
+      <input class="prepay-amt" type="text" inputmode="numeric" placeholder="Số tiền">
+      <button class="btn btn-del" onclick="this.parentElement.remove()">✕</button>
+    `;
+    document.getElementById('prepays').appendChild(div);
+    attachFormat(div.querySelector('.prepay-amt'));
+
+    // Khi đổi "từ", rebuild lại "đến" để loại trừ người đó
+    div.querySelector('.prepay-from').addEventListener('change', function() {
+      syncPrepayRow(div, getNames());
+    });
+  }
+
+  // ---- Tính toán ----
+  function calculate() {
+    const total = parseNum(document.getElementById('total').value);
+    const people = [];
+    document.querySelectorAll('.person-row').forEach(row => {
+      const name = row.querySelector('.name').value.trim();
+      const paid = parseNum(row.querySelector('.paid').value);
+      if (name !== '') people.push({ name, paid });
+    });
+
+    const out = document.getElementById('output');
+    if (people.length === 0) {
+      out.innerHTML = '<div class="card warn">Ơ kìa, nhập ít nhất 1 người (có tên) đã nào! 😅</div>';
+      return;
+    }
+    if (total <= 0) {
+      out.innerHTML = '<div class="card warn">Hóa đơn bao nhiêu vậy bạn ơi? Nhập số lớn hơn 0 nhé! 🧾</div>';
+      return;
+    }
+
+    const share = total / people.length;
+    const totalPaid = people.reduce((s, p) => s + p.paid, 0);
+
+    const balanceMap = {};
+    people.forEach(p => { balanceMap[p.name] = p.paid - share; });
+
+    document.querySelectorAll('.prepay-row').forEach(row => {
+      const from = row.querySelector('.prepay-from').value;
+      const to = row.querySelector('.prepay-to').value;
+      const amt = parseNum(row.querySelector('.prepay-amt').value);
+      if (amt > 0 && from && to && from !== to) {
+        if (balanceMap[from] !== undefined) balanceMap[from] += amt;
+        if (balanceMap[to] !== undefined) balanceMap[to] -= amt;
+      }
+    });
+    people.forEach(p => { p.balance = balanceMap[p.name]; });
+
+    let html = '';
+    html += `<div class="card" style="padding:14px">
+      <div class="share-banner">
+        <div class="label">Mỗi đứa gánh</div>
+        <div class="amount">${fmt(share)}</div>
+      </div>
+    </div>`;
+
+    html += '<div class="card"><div class="card-title"><span class="icon ic-result">📊</span> Sổ nợ từng đứa</div>';
+    if (totalPaid !== total) {
+      const diff = total - totalPaid;
+      html += `<div class="warn">⚠️ Tổng tiền đã trả cho quán (${fmt(totalPaid)}) khác tổng hóa đơn (${fmt(total)}). `
+        + `Lệch ${fmt(Math.abs(diff))}. Kết quả vẫn tính theo tổng hóa đơn nha.</div>`;
+    }
+    people.forEach(p => {
+      let cls, text;
+      if (Math.round(p.balance) > 0) { cls = 'positive'; text = '+ ' + fmt(p.balance); }
+      else if (Math.round(p.balance) < 0) { cls = 'negative'; text = '− ' + fmt(-p.balance); }
+      else { cls = 'zero'; text = 'huề'; }
+      html += `<div class="result-row">
+        <div><div class="who">${p.name}</div><div class="sub">đã trả ${fmt(p.paid)}</div></div>
+        <div class="pill ${cls}">${text}</div>
+      </div>`;
+    });
+    html += '</div>';
+
+    const transfers = settle(people);
+    html += '<div class="card"><div class="card-title"><span class="icon ic-money">💸</span> Ai ting ting cho ai</div>';
+    if (transfers.length === 0) {
+      html += '<div class="muted">Khỏi chuyển luôn — cả hội huề hết, đỉnh! 🎉</div>';
+    } else {
+      transfers.forEach(t => {
+        html += `<div class="transfer">
+          <span class="t-icon">👉</span>
+          <div><b>${t.from}</b> ting ting cho <b>${t.to}</b>: ${fmt(t.amount)}</div>
+        </div>`;
+      });
+    }
+    html += '</div>';
+
+    out.innerHTML = html;
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Thuật toán cân bằng: ghép người nợ với người dư
+  function settle(people) {
+    const debtors = people.filter(p => Math.round(p.balance) < 0)
+      .map(p => ({ name: p.name, amt: -p.balance }));
+    const creditors = people.filter(p => Math.round(p.balance) > 0)
+      .map(p => ({ name: p.name, amt: p.balance }));
+
+    const transfers = [];
+    let i = 0, j = 0;
+    while (i < debtors.length && j < creditors.length) {
+      const pay = Math.min(debtors[i].amt, creditors[j].amt);
+      if (Math.round(pay) > 0) {
+        transfers.push({ from: debtors[i].name, to: creditors[j].name, amount: pay });
+      }
+      debtors[i].amt -= pay;
+      creditors[j].amt -= pay;
+      if (Math.round(debtors[i].amt) <= 0) i++;
+      if (Math.round(creditors[j].amt) <= 0) j++;
+    }
+    return transfers;
+  }
+
+  // ---- Khởi tạo ----
+  attachFormat(document.getElementById('total'));
+  addPerson();
+  addPerson();
+  addPerson();
+</script>
+</body>
+</html>
