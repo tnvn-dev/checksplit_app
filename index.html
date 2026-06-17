@@ -323,18 +323,25 @@
     border-radius: 11px;
   }
   .btn-primary {
-    background: linear-gradient(135deg, #7c3aed 0%, #f43f5e 100%);
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
     color: #fff;
     width: 100%;
-    padding: 17px;
+    padding: 20px;
     font-family: 'Baloo 2', cursive;
-    font-size: 19px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     margin-bottom: 18px;
-    box-shadow: 0 10px 26px rgba(244,63,94,0.36);
-    letter-spacing: .3px;
+    box-shadow: 0 12px 32px rgba(239,68,68,0.45), 0 0 0 4px rgba(245,158,11,0.18);
+    letter-spacing: .5px;
+    transform: scale(1);
+    transition: transform .15s, filter .15s, box-shadow .15s;
   }
-  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-primary:hover {
+    filter: brightness(1.07);
+    transform: scale(1.02);
+    box-shadow: 0 16px 40px rgba(239,68,68,0.55), 0 0 0 6px rgba(245,158,11,0.22);
+  }
+  .btn-primary:active { transform: scale(0.98); }
 
   .share-banner {
     background: linear-gradient(135deg, #7c3aed 0%, #c026d3 50%, #f43f5e 100%);
@@ -886,6 +893,13 @@
     people.forEach(n => { breakdown[n] = []; });
     const billSummary = [];
 
+    const rawDebts = {}; // rawDebts[from][to] = amount
+    function addDebt(from, to, amount) {
+      if (from === to || amount <= 0) return;
+      if (!rawDebts[from]) rawDebts[from] = {};
+      rawDebts[from][to] = (rawDebts[from][to] || 0) + amount;
+    }
+
     billEls.forEach(billEl => {
       const bill = getBillData(billEl);
       if (bill.total <= 0) return;
@@ -907,6 +921,7 @@
             breakdown[n].push({ label: billName + ' (chia đều — tự trả)', amount: share, isCredit: false });
             breakdown[n].push({ label: '↳ Tự trả ' + billName, amount: share, isCredit: true });
           } else {
+            if (n !== bill.payer) addDebt(n, bill.payer, share);
             balanceMap[n] -= share;
             breakdown[n].push({ label: billName + ' (chia đều)', amount: share, isCredit: false });
             if (n !== bill.payer) breakdown[n].push({ label: '↳ Trả cho ' + bill.payer, amount: null, isCredit: false, isNote: true });
@@ -920,6 +935,7 @@
             breakdown[n].push({ label: billName + ' (tự trả)', amount: amt, isCredit: false });
             breakdown[n].push({ label: '↳ Tự trả ' + billName, amount: amt, isCredit: true });
           } else {
+            if (n !== bill.payer) addDebt(n, bill.payer, amt);
             balanceMap[n] -= amt;
             breakdown[n].push({ label: billName, amount: amt, isCredit: false });
             if (n !== bill.payer) breakdown[n].push({ label: '↳ Trả cho ' + bill.payer, amount: null, isCredit: false, isNote: true });
@@ -941,6 +957,15 @@
       const to = row.querySelector('.prepay-to').value;
       const amt = parseNum(row.querySelector('.prepay-amt').value);
       if (amt > 0 && from && to && from !== to) {
+        // Prepay giảm nợ: from đã trả → rawDebts[from][to] giảm, dư thì to nợ lại from
+        const fromOwesTo = rawDebts[from]?.[to] || 0;
+        if (fromOwesTo >= amt) {
+          rawDebts[from][to] -= amt;
+        } else {
+          if (rawDebts[from]) rawDebts[from][to] = 0;
+          if (!rawDebts[to]) rawDebts[to] = {};
+          rawDebts[to][from] = (rawDebts[to][from] || 0) + (amt - fromOwesTo);
+        }
         if (balanceMap[from] !== undefined) {
           balanceMap[from] += amt;
           breakdown[from].push({ label: `↳ Đã chuyển cho ${to}`, amount: amt, isCredit: true });
@@ -1002,7 +1027,7 @@
     });
     html += '</div>';
 
-    const transfers = settle(peopleData);
+    const transfers = settleRawDebts(rawDebts);
     html += '<div class="card"><div class="card-title"><span class="icon ic-money">💸</span> Ai ting ting cho ai</div>';
     if (transfers.length === 0) {
       html += '<div class="muted">Khỏi chuyển luôn — cả hội huề hết, đỉnh! 🎉</div>';
@@ -1017,6 +1042,22 @@
 
     out.innerHTML = html;
     out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function settleRawDebts(rawDebts) {
+    const transfers = [];
+    const seen = new Set();
+    Object.keys(rawDebts).forEach(from => {
+      Object.keys(rawDebts[from]).forEach(to => {
+        const key = [from, to].sort().join('|');
+        if (seen.has(key)) return;
+        seen.add(key);
+        const net = (rawDebts[from]?.[to] || 0) - (rawDebts[to]?.[from] || 0);
+        if (Math.round(net) > 0) transfers.push({ from, to, amount: Math.round(net) });
+        else if (Math.round(net) < 0) transfers.push({ from: to, to: from, amount: Math.round(-net) });
+      });
+    });
+    return transfers;
   }
 
   function settle(people) {
