@@ -345,11 +345,22 @@
 
   footer {
     text-align: center;
-    padding: 10px 20px 40px;
+    padding: 20px 20px 40px;
     color: var(--muted);
     font-size: 13px;
+    line-height: 1.8;
   }
-  footer .mono { font-family: 'JetBrains Mono', monospace; color: var(--primary); }
+  footer .mono {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary);
+  }
+  footer .author {
+    background: linear-gradient(135deg, #7c3aed, #f43f5e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+  }
 
   @media (max-width: 480px) {
     .hero { padding: 40px 16px 110px; }
@@ -401,6 +412,8 @@
 
     <footer>
       Made with 💜 &amp; <span class="mono">caffeine</span> · chia đều tới từng đồng
+      <br>
+      Built by ✨ <span class="author">Nguyễn Tú</span> ✨
     </footer>
   </main>
 
