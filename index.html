@@ -866,9 +866,10 @@
 
   function syncPayerAmt(billEl) {
     const sel = billEl.querySelector('.bill-payer');
-    if (!sel || !sel.value) return;
+    if (!sel) return;
     const payerAmt = billEl.querySelector('.bill-payer-amt');
     if (!payerAmt) return;
+    if (!sel.value) { payerAmt.value = ''; return; }
     const bill = getBillData(billEl);
     if (bill.total > 0) {
       payerAmt.value = bill.total.toLocaleString('vi-VN');
